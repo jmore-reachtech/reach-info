@@ -2,17 +2,17 @@
 
 /**
  * This file is part of Linfo (c) 2010 Joseph Gillotti.
- * 
+ *
  * Linfo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Linfo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with Linfo.  If not, see <http://www.gnu.org/licenses/>.
 */
@@ -26,7 +26,7 @@ defined('IN_INFO') or exit;
  * Get info on a usual linux system
  * Works by exclusively looking around /proc and /sys
  * Totally ignores CallExt class, very deliberately
- * Also deliberately ignores trying to find out the distro. 
+ * Also deliberately ignores trying to find out the distro.
  */
 class OS_Linux {
 
@@ -36,7 +36,7 @@ class OS_Linux {
 
 	/**
 	 * Constructor. Localizes settings
-	 * 
+	 *
 	 * @param array $settings of linfo settings
 	 * @access public
 	 */
@@ -54,8 +54,8 @@ class OS_Linux {
 	}
 
 	/**
-	 * getAll 
-	 * 
+	 * getAll
+	 *
 	 * @access public
 	 * @return array the info
 	 */
@@ -88,25 +88,25 @@ class OS_Linux {
 	}
 
 	/**
-	 * getOS 
-	 * 
+	 * getOS
+	 *
 	 * @access private
 	 * @return string Linux
 	 */
 	private function getOS() {
-		
+
 		// Linux, obviously
 		return 'Linux';
 	}
 
 	/**
-	 * getKernel 
-	 * 
+	 * getKernel
+	 *
 	 * @access private
 	 * @return string kernel version
 	 */
 	private function getKernel() {
-		
+
 		// Time?
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Kernel');
@@ -134,20 +134,20 @@ class OS_Linux {
 	}
 
 	/**
-	 * getHostName 
-	 * 
+	 * getHostName
+	 *
 	 * @access private
 	 * @return string the host name
 	 */
 	private function getHostName() {
-		
+
 		// Time?
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Hostname');
 
 		// File containing info
 		$file = '/proc/sys/kernel/hostname';
-		
+
 		// Get it
 		$hostname = getContents($file, false);
 
@@ -164,13 +164,13 @@ class OS_Linux {
 	}
 
 	/**
-	 * getRam 
-	 * 
+	 * getRam
+	 *
 	 * @access private
 	 * @return array the memory information
 	 */
 	private function getRam(){
-		
+
 		// Time?
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Memory');
@@ -202,7 +202,7 @@ class OS_Linux {
 		// Get swapContents
 		@preg_match_all('/^(\S+)\s+(\S+)\s+(\d+)\s(\d+)/m', getContents($procFileSwap), $matches, PREG_SET_ORDER);
 		foreach ((array)$matches as $swapDevice) {
-			
+
 			// Append each swap device
 			$swapVals[] = array (
 				'device' => $swapDevice[1],
@@ -226,13 +226,13 @@ class OS_Linux {
 	}
 
 	/**
-	 * getCPU 
-	 * 
+	 * getCPU
+	 *
 	 * @access private
 	 * @return array of cpu info
 	 */
 	private function getCPU() {
-		
+
 		// Time?
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('CPUs');
@@ -264,17 +264,17 @@ class OS_Linux {
 
 		// Go through lines in file
 		$num_lines = count($lines);
-		
+
 		// We use the key of the first line to separate CPUs
 		$first_line = substr($lines[0], 0, strpos($lines[0], ' '));
-		
+
 		for ($i = 0; $i < $num_lines; $i++) {
-			
+
 			// Approaching new CPU? Save current and start new info for this
 			if (strpos($lines[$i], $first_line) === 0 && count($cur_cpu) > 0) {
 				$cpus[] = $cur_cpu;
 				$cur_cpu = array();
-				
+
 				// Default to unknown
 				$cur_cpu['Model'] = 'Unknown';
 			}
@@ -288,10 +288,10 @@ class OS_Linux {
 			$key = trim($line[0]);
 			$value = trim($line[1]);
 
-			
+
 			// What we want are MHZ, Vendor, and Model.
 			switch ($key) {
-				
+
 				// CPU model
 				case 'model name':
 				case 'cpu':
@@ -326,7 +326,7 @@ class OS_Linux {
 
 	// Famously interesting uptime
 	private function getUpTime () {
-		
+
 		// Time?
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Uptime');
@@ -365,13 +365,13 @@ class OS_Linux {
 	}
 
 	/**
-	 * getHD 
-	 * 
+	 * getHD
+	 *
 	 * @access private
 	 * @return array the hard drive info
 	 */
 	private function getHD() {
-		
+
 		// Time?
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Drives');
@@ -390,15 +390,15 @@ class OS_Linux {
 				);
 			}
 		}
-		
+
 		// Store drives here
 		$drives = array();
-		
+
 		// Get actual drives
 		$drive_paths = (array) @glob('/sys/block/*/device/model', GLOB_NOSORT);
 		$num_drives = count($drive_paths);
 		for ($i = 0; $i < $num_drives; $i++) {
-			
+
 			// Path
 			$path = $drive_paths[$i];
 
@@ -426,7 +426,7 @@ class OS_Linux {
 				'reads' => $reads,
 				'writes' => $writes,
 				'size' => getContents(dirname(dirname($path)).'/size', 0) * 512,
-				'partitions' => array_key_exists($parts[3], $partitions) && is_array($partitions[$parts[3]]) ? $partitions[$parts[3]] : false 
+				'partitions' => array_key_exists($parts[3], $partitions) && is_array($partitions[$parts[3]]) ? $partitions[$parts[3]] : false
 			);
 		}
 
@@ -435,13 +435,13 @@ class OS_Linux {
 	}
 
 	/**
-	 * getTemps 
-	 * 
+	 * getTemps
+	 *
 	 * @access private
 	 * @return array the temps
 	 */
 	private function getTemps() {
-	
+
 		// Time?
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Temperature');
@@ -553,9 +553,9 @@ class OS_Linux {
 					$value = strlen($value) == 5 ? substr($value, 0, 2) : $value;  // Pointless extra 0's
 				}
 				elseif (preg_match('/^in\d_label$/', $filename)) {
-					$unit = 'v'; 
+					$unit = 'v';
 				}
-				else 
+				else
 					$unit = ''; // Not sure if there's a temp
 
 				// Append values
@@ -566,7 +566,7 @@ class OS_Linux {
 					'unit' => $unit
 				);
 			}
-			
+
 			// Save any if we have any
 			if (count($hwmon_vals) > 0)
 				$return = array_merge($return, $hwmon_vals);
@@ -595,13 +595,13 @@ class OS_Linux {
 	}
 
 	/**
-	 * getMounts 
-	 * 
+	 * getMounts
+	 *
 	 * @access private
 	 * @return array the mounted the file systems
 	 */
 	private function getMounts() {
-		
+
 		// Time?
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Mounted file systems');
@@ -626,14 +626,14 @@ class OS_Linux {
 
 			// This mount
 			$mount = $match[$i];
-			
+
 			// Should we not show this?
 			if (in_array($mount[1], $this->settings['hide']['storage_devices']) || in_array($mount[3], $this->settings['hide']['filesystems']))
 				continue;
-			
+
 			// Spaces and other things in the mount path are escaped C style. Fix that.
 			$mount[2] = stripcslashes($mount[2]);
-			
+
 			// Get these
 			$size = @disk_total_space($mount[2]);
 			$free = @disk_free_space($mount[2]);
@@ -642,11 +642,11 @@ class OS_Linux {
 			// If it's a symlink, find out where it really goes.
 			// (using realpath instead of readlink because the former gives absolute paths)
 			$symlink = is_link($mount[1]) ? realpath($mount[1]) : false;
-			
+
 			// Optionally get mount options
-			if ($this->settings['show']['mounts_options'] && !in_array($mount[3], (array) $this->settings['hide']['fs_mount_options'])) 
+			if ($this->settings['show']['mounts_options'] && !in_array($mount[3], (array) $this->settings['hide']['fs_mount_options']))
 				$mount_options = explode(',', $mount[4]);
-			else 
+			else
 				$mount_options = array();
 
 			// Might be good, go for it
@@ -668,13 +668,13 @@ class OS_Linux {
 	}
 
 	/**
-	 * getDevs 
-	 * 
+	 * getDevs
+	 *
 	 * @access private
 	 * @return array of devices
 	 */
 	private function getDevs() {
-		
+
 		// Time?
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Hardware Devices');
@@ -691,8 +691,8 @@ class OS_Linux {
 			'/usr/share/hwdata/usb.ids',	// centos. maybe also redhat/fedora
 		));
 
-		// Did we not get them?
-		$pci_ids || $this->error->add('Linux Device Finder', 'Cannot find pci.ids; ensure pciutils is installed.');
+		// Did we not get them? (no embedded pci)
+		//$pci_ids || $this->error->add('Linux Device Finder', 'Cannot find pci.ids; ensure pciutils is installed.');
 		$usb_ids || $this->error->add('Linux Device Finder', 'Cannot find usb.ids; ensure usbutils is installed.');
 
 		// Class that does it
@@ -702,17 +702,17 @@ class OS_Linux {
 	}
 
 	/**
-	 * getRAID 
-	 * 
+	 * getRAID
+	 *
 	 * @access private
 	 * @return array of raid arrays
 	 */
 	private function getRAID() {
-		
+
 		// Time?
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('RAID');
-		
+
 		// Store it here
 		$raidinfo = array();
 
@@ -734,7 +734,7 @@ class OS_Linux {
 
 			// Deal with entries
 			foreach ((array) $match as $array) {
-				
+
 				// Temporarily store drives here
 				$drives = array();
 
@@ -797,13 +797,13 @@ class OS_Linux {
 	}
 
 	/**
-	 * getLoad 
-	 * 
+	 * getLoad
+	 *
 	 * @access private
 	 * @return array of current system load values
 	 */
 	private function getLoad() {
-		
+
 		// Time?
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Load Averages');
@@ -832,13 +832,13 @@ class OS_Linux {
 	}
 
 	/**
-	 * getNet 
-	 * 
+	 * getNet
+	 *
 	 * @access private
 	 * @return array of network devices
 	 */
 	private function getNet() {
-		
+
 		// Time?
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Network Devices');
@@ -852,7 +852,7 @@ class OS_Linux {
 		// Get values for each device
 		$num_nets = count($nets);
 		for ($i = 0; $i < $num_nets; $i++) {
-			
+
 			// Path
 			$path = $nets[$i];
 
@@ -873,10 +873,10 @@ class OS_Linux {
 			// motherfucker
 			if ($state = 'unknown' && file_exists($path.'/carrier')) {
 				 $carrier = getContents($path.'/carrier', false);
-				if (!empty($carrier)) 
-					$state = 'up'; 
+				if (!empty($carrier))
+					$state = 'up';
 				else
-					$state = 'down'; 
+					$state = 'down';
 			}
 
 			// Type
@@ -910,23 +910,23 @@ class OS_Linux {
 	}
 
 	/**
-	 * getBattery 
-	 * 
+	 * getBattery
+	 *
 	 * @access private
 	 * @return array of battery status
 	 */
 	private function getBattery() {
-		
+
 		// Time?
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Batteries');
-		
+
 		// Return values
 		$return = array();
 
 		// Here they should be
 		$bats = (array) @glob('/sys/class/power_supply/BAT*', GLOB_NOSORT);
-	
+
 		// Get vals for each battery
 		foreach ($bats as $b) {
 
@@ -937,7 +937,7 @@ class OS_Linux {
 				if (!is_file($f))
 					$go_for_it = false; // Continue out of two nested loops
 
-			if (!$go_for_it) 
+			if (!$go_for_it)
 				continue;
 
 			// Get these from the simple text files
@@ -962,13 +962,13 @@ class OS_Linux {
 	}
 
 	/**
-	 * getWifi 
-	 * 
+	 * getWifi
+	 *
 	 * @access private
 	 * @return array of wifi devices
 	 */
 	private function getWifi() {
-		
+
 		// Time?
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Wifi');
@@ -987,7 +987,7 @@ class OS_Linux {
 
 		// Parse
 		@preg_match_all('/^ (\S+)\:\s*(\d+)\s*(\S+)\s*(\S+)\s*(\S+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*$/m', $contents, $match, PREG_SET_ORDER);
-		
+
 		// Match
 		foreach ($match as $wlan) {
 			$return[] = array(
@@ -1010,13 +1010,13 @@ class OS_Linux {
 	}
 
 	/**
-	 * getSoundCards 
-	 * 
+	 * getSoundCards
+	 *
 	 * @access private
 	 * @return array of soundcards
 	 */
 	private function getSoundCards() {
-		
+
 		// Time?
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Sound cards');
@@ -1040,7 +1040,7 @@ class OS_Linux {
 		$cards = array();
 
 		// Deal with results
-		foreach ($matches as $card)	
+		foreach ($matches as $card)
 			$cards[] = array(
 				'number' => $card[1],
 				'card' => $card[2],
@@ -1051,20 +1051,20 @@ class OS_Linux {
 	}
 
 	/**
-	 * getProcessStats 
-	 * 
+	 * getProcessStats
+	 *
 	 * @access private
 	 * @return array of process stats
 	 */
 	private function getProcessStats() {
-		
+
 		// Time?
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Process Stats');
 
 		// We'll return this after stuffing it with useful info
 		$result = array(
-			'exists' => true, 
+			'exists' => true,
 			'totals' => array(
 				'running' => 0,
 				'zombie' => 0,
@@ -1074,7 +1074,7 @@ class OS_Linux {
 			'proc_total' => 0,
 			'threads' => 0
 		);
-		
+
 		// Get all the paths to each process' status file
 		$processes = (array) @glob('/proc/*/status', GLOB_NOSORT);
 
@@ -1083,11 +1083,11 @@ class OS_Linux {
 
 		// Go through each
 		for ($i = 0; $i < $result['proc_total']; $i++) {
-			
+
 			// Don't waste time if we can't use it
 			if (!is_readable($processes[$i]))
 				continue;
-			
+
 			// Get that file's contents
 			$status_contents = getContents($processes[$i]);
 
@@ -1128,13 +1128,13 @@ class OS_Linux {
 	}
 
 	/**
-	 * getServices 
-	 * 
+	 * getServices
+	 *
 	 * @access private
 	 * @return array the services
 	 */
 	private function getServices() {
-		
+
 		// Time?
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Services');
@@ -1160,13 +1160,13 @@ class OS_Linux {
 				$do_process_search = true;
 			}
 		}
-			
+
 		// Should we go ahead and do the PID search based on executables?
 		if ($do_process_search) {
 			// Precache all process cmdlines
 			for ($i = 0; $i < $num_paths; $i++)
 				$cmdline_cache[$i] = explode("\x00", getContents($potential_paths[$i]));
-			
+
 			// Go through the list of executables to search for
 			foreach ($this->settings['services']['executables'] as $service => $exec) {
 				// Go through pid file list. for loops are faster than foreach
@@ -1210,7 +1210,7 @@ class OS_Linux {
 				continue;
 			}
 
-			
+
 			// Attempt getting info out of it
 			if (!preg_match_all('/^(\w+):\s+(\w+)/m', $status_contents, $status_matches, PREG_SET_ORDER))
 				continue;
@@ -1256,7 +1256,7 @@ class OS_Linux {
 						if (is_numeric($status_matches[$i][2]))
 							$mem = $status_matches[$i][2] * 1024; // Measured in kilobytes; we want bytes
 					break;
-					
+
 					// Thread count
 					case 'Threads':
 						if (is_numeric($status_matches[$i][2]))
@@ -1281,21 +1281,21 @@ class OS_Linux {
 
 		return $statuses;
 	}
-	
+
 	/**
 	 * getDistro
-	 * 
+	 *
 	 * @access private
 	 * @return array the distro,version or false
 	 */
 	private function getDistro() {
-		
+
 		// Time?
 		if (!empty($this->settings['timer']))
 			$t = new LinfoTimerStart('Determining Distrobution');
 
-		// Seems the best way of doing it, as opposed to calling 'lsb_release -a', parsing /etc/issue, or 
-		// just checking if distro specific version files exist without actually parsing them: 
+		// Seems the best way of doing it, as opposed to calling 'lsb_release -a', parsing /etc/issue, or
+		// just checking if distro specific version files exist without actually parsing them:
 		// - Allows multiple files of the same name for different distros/versions of distros, provided each
 		// - uses different regular expression syntax.
 		// - Also permits files that contain only the distro release version and nothing else,
@@ -1304,10 +1304,10 @@ class OS_Linux {
 
 		// Store the distribution's files we check for, optional regex parsing string, and name of said distro here:
 		$distros = array(
-			
+
 			// This snags ubuntu and other distros which use the lsb method of identifying themselves
 			array('/etc/lsb-release','/^DISTRIB_ID=([^$]+)$\n^DISTRIB_RELEASE=([^$]+)$\n^DISTRIB_CODENAME=([^$]+)$\n/m', false),
-			
+
 			// These working snag versions
 			array('/etc/redhat-release', '/^CentOS release ([\d\.]+) \(([^)]+)\)$/', 'CentOS'),
 			array('/etc/redhat-release', '/^Red Hat.+release (\S+) \(([^)]+)\)$/', 'RedHat'),
@@ -1316,7 +1316,7 @@ class OS_Linux {
 			array('/etc/SuSE-release', '/^VERSION = ([\d\.]+)$/m', 'openSUSE'),
 			array('/etc/slackware-version', '/([\d\.]+)$/', 'Slackware'),
 
-			// These don't because they're empty 
+			// These don't because they're empty
 			array('/etc/arch-release', '', 'Arch'),
 
 			// I'm unaware of the structure of these files, so versions are not picked up
@@ -1356,7 +1356,7 @@ class OS_Linux {
 						'version' => $contents == '' ? false : $contents
 					);
 				}
-				
+
 				// No fucking idea what the version is. Don't use the file's contents for anything
 				elseif($distro[1] === '') {
 					return array(
@@ -1389,7 +1389,7 @@ class OS_Linux {
 
 	/**
 	 * getCPUArchitecture
-	 * 
+	 *
 	 * @access private
 	 * @return string the arch and bits
 	 */
@@ -1399,7 +1399,7 @@ class OS_Linux {
 
 	/**
 	 * getNumLoggedIn
-	 * 
+	 *
 	 * @access private
 	 * @return number of logged in users with shells
 	 */
@@ -1407,7 +1407,7 @@ class OS_Linux {
 
 		// Snag command line of every process in system
 		$procs = glob('/proc/*/cmdline', GLOB_NOSORT);
-		
+
 		// Store unqiue users here
 		$users = array();
 
@@ -1417,7 +1417,7 @@ class OS_Linux {
 			// Does the process match a popular shell, such as bash, csh, etc?
 			if (preg_match('/(?:bash|csh|zsh|ksh)$/', getContents($proc, ''))) {
 
-				// Who the fuck owns it, anyway? 
+				// Who the fuck owns it, anyway?
 				$owner = fileowner(dirname($proc));
 
 				// Careful..
@@ -1429,7 +1429,7 @@ class OS_Linux {
 					$users[] = $owner;
 			}
 		}
-		
+
 		// Give number of unique users with shells running
 		return count($users);
 	}
