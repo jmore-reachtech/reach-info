@@ -734,7 +734,8 @@ echo $xx;
 echo '
 	</pre>
 	</td></tr>
-	</table>';
+	</table>
+	</div>';
 echo '
 <div class="infoTable">
 	<h2>dmesg</h2>
@@ -746,7 +747,8 @@ echo $xx;
 echo '
 	</pre>
 	</td></tr>
-	</table>';
+	</table>
+	</div>';
 	
 	// Feel like showing errors? Are there any even?
 	if (!empty($settings['show_errors']) && LinfoError::Fledging()->num() > 0) {
