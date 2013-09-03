@@ -16,6 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with Linfo.  If not, see <http://www.gnu.org/licenses/>.
  * 
+ * 09/2013 -- note:
+ * This has been hacked on a bit to make it work better for Reach Tech's 
+ * g2c1 machine.
+ * 
 */
 
 /**
@@ -466,6 +470,26 @@ echo '<div class="col2">
 			</table>
 		</div>';
 	}
+	
+	// Show reach-version
+	if (true) {
+		echo '
+		<div class="infoTable">
+			<h2>Reach Info</h2>
+			<table>
+				<tr><td><pre>';
+				
+		$fh = fopen('http://127.0.0.1/reach-version','r');
+		while ($line = fgets($fh)) {
+		  echo $line;
+		}
+		fclose($fh);
+				
+		echo '</pre></td>
+				</tr>
+			</table>
+		</div>';
+	}
 
 	// Show sound card stuff?
 	if (!empty($settings['show']['sound']) && count($info['SoundCards']) > 0) {
@@ -703,7 +727,18 @@ echo '<div class="col2">
 	</table>
 </div>';
 	}
-
+echo '
+<div class="infoTable">
+	<h2>dmesg</h2>
+	<table>
+	<tr><td>
+	<pre>';
+$xx = `dmesg` ;
+echo $xx;
+echo '
+	</pre>
+	</td></tr>
+	</table>';
 	// Feel like showing errors? Are there any even?
 	if (!empty($settings['show_errors']) && LinfoError::Fledging()->num() > 0) {
 		echo '
