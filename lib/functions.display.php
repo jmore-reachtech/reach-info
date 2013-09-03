@@ -16,10 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with Linfo.  If not, see <http://www.gnu.org/licenses/>.
  * 
- * 09/2013 -- note:
- * This has been hacked on a bit to make it work better for Reach Tech's 
- * g2c1 machine.
- * 
 */
 
 /**
@@ -729,6 +725,18 @@ echo '<div class="col2">
 	}
 echo '
 <div class="infoTable">
+	<h2>top</h2>
+	<table>
+	<tr><td>
+	<pre>';
+$xx = `top -n 1` ;
+echo $xx;
+echo '
+	</pre>
+	</td></tr>
+	</table>';
+echo '
+<div class="infoTable">
 	<h2>dmesg</h2>
 	<table>
 	<tr><td>
@@ -739,6 +747,7 @@ echo '
 	</pre>
 	</td></tr>
 	</table>';
+	
 	// Feel like showing errors? Are there any even?
 	if (!empty($settings['show_errors']) && LinfoError::Fledging()->num() > 0) {
 		echo '
