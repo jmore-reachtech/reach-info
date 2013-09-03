@@ -474,13 +474,8 @@ echo '<div class="col2">
 			<h2>Reach Info</h2>
 			<table>
 				<tr><td><pre>';
-				
-		$fh = fopen('http://127.0.0.1/reach-version','r');
-		while ($line = fgets($fh)) {
-		  echo $line;
-		}
-		fclose($fh);
-				
+		$xx = `cat /etc/reach-version` ;
+		echo $xx;
 		echo '</pre></td>
 				</tr>
 			</table>
